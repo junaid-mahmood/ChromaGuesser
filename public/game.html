@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromaGuesser - Game</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .game-layout {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: fit-content;
+        }
+        .main-game {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .game-header {
+            width: 100%;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        .player-info {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00cec9;
+        }
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 206, 201, 0.4);
+        }
+        .color-display {
+            height: 400px;
+        }
+        .options {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            margin-top: 1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        @media (max-width: 1200px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: 2;
+            }
+            .main-game {
+                order: 1;
+            }
+        }
+        .timer-bar {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00cec9;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .timer-bar.warning {
+            color: #e17055;
+            animation: pulse 1s infinite;
+            background: rgba(231, 76, 60, 0.1);
+            border-color: rgba(231, 76, 60, 0.2);
+        }
+        .timer-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        .timer-card.warning {
+            background: rgba(231, 76, 60, 0.1);
+            border-color: rgba(231, 76, 60, 0.2);
+        }
+        .timer-card .stat-value {
+            font-size: 3rem;
+            color: #00cec9;
+            font-weight: 700;
+        }
+        .timer-card.warning .stat-value {
+            color: #e17055;
+            animation: pulse 1s infinite;
+        }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .stats-grid {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="window.location.href='/'" class="menu-btn">Main Menu</button>
+    <div class="game-layout">
+        <aside class="sidebar">
+            <div class="player-info">
+                <h2>Player: <span id="playerName"></span></h2>
+            </div>
+            <div class="timer-card" id="timerContainer">
+                <div class="stat-value" id="timer">60</div>
+                <div class="stat-label">Time Left</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="gameMode"></div>
+                    <div class="stat-label">Mode</div>
+                </div>
+            </div>
+            <button onclick="game.newGame()" class="new-color-btn" style="width: 100%; margin-top: 1rem;">New Color</button>
+            <button onclick="window.location.href='/analytics'" class="analytics-btn" style="width: 100%; margin-top: 1rem;">
+                View Analytics
+            </button>
+        </aside>
+        <main class="main-game">
+            <div class="color-display" id="colorDisplay"></div>
+            <div class="options" id="options"></div>
+        </main>
+    </div>
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>Game Over!</h2>
+            <div class="final-stats">
+                <p>Final Score: <span id="finalScore">0</span></p>
+                <p>Accuracy: <span id="finalAccuracy">0%</span></p>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="window.location.reload()">Play Again</button>
+                <button onclick="window.location.href='/'">Main Menu</button>
+            </div>
+        </div>
+    </div>
+    <div class="notification" id="notification"></div>
+    <script src="/js/gameModes.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script src="/js/achievements.js"></script>
+    <script src="/js/tutorial.js"></script>
+    <script src="/js/game.js"></script>
+</body>
+</html>

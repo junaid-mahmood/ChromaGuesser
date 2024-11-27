@@ -1,0 +1,36 @@
+:root {
+    /* Primary Colors */
+    --primary-gradient: linear-gradient(45deg, #00b894, #00cec9);
+    --secondary-gradient: linear-gradient(45deg, #fff, #a8b8ff);
+    
+    /* Background Colors */
+    --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --bg-hover: rgba(255, 255, 255, 0.1);
+    
+    /* Text Colors */
+    --text-primary: #fff;
+    --text-secondary: #a8b8ff;
+    --text-accent: #00cec9;
+    
+    /* Borders & Shadows */
+    --border-light: rgba(255, 255, 255, 0.1);
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+} 

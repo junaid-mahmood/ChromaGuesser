@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ChromaGuesser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2b42 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .header {
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(0, 206, 201, 0.5);
+        }
+        .title span {
+            color: #00cec9;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a8b8ff;
+            opacity: 0.9;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .game-modes {
+            background: var(--bg-card);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-light);
+        }
+        .mode-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            text-align: center;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .mode-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-lg);
+        }
+        .mode-btn {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--text-accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 6px 20px rgba(0, 206, 201, 0.2);
+        }
+        .mode-btn.active {
+            background: var(--primary-gradient);
+            border: 2px solid var(--text-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 206, 201, 0.3);
+        }
+        .mode-icon {
+            font-size: 2rem;
+            margin-right: var(--spacing-md);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        .mode-info {
+            text-align: left;
+        }
+        .mode-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .mode-stars {
+            color: #ffd700;
+            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        .mode-desc {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .player-section {
+            background: var(--bg-card);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            min-height: 300px;
+        }
+        .input-group {
+            margin-bottom: 0;
+        }
+        input {
+            width: 100%;
+            padding: 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1.3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00cec9;
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.2);
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        .start-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg);
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .leaderboard {
+            grid-column: span 2;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .leaderboard h2 {
+            color: #a8b8ff;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            text-align: center;
+        }
+        .leaderboard-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            list-style: none;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .player-rank {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00cec9;
+            min-width: 2rem;
+        }
+        .player-name {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        .player-mode {
+            font-size: 0.9rem;
+            color: #a8b8ff;
+            opacity: 0.8;
+            text-transform: capitalize;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+        }
+        .player-score {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00cec9;
+            background: rgba(0, 206, 201, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+        }
+        .leaderboard-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+            }
+            .leaderboard {
+                grid-column: span 1;
+            }
+            .title {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+            }
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+            .mode-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .popup.show {
+            display: flex;
+        }
+        .popup-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: popupIn 0.3s ease-out;
+        }
+        .popup-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #e17055;
+        }
+        .popup-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+        .popup-btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 206, 201, 0.3);
+        }
+        @keyframes popupIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 206, 201, 0.3));
+            transition: transform 0.3s ease;
+        }
+        .logo:hover {
+            transform: scale(1.1);
+        }
+        .mode-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .mode-stars {
+            color: #ffd700;
+            letter-spacing: 2px;
+        }
+        .mode-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .achievements-preview {
+            grid-column: span 2;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .achievement-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .achievement-icon {
+            font-size: 2rem;
+        }
+        .achievement-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        .achievement-info p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .mode-icon {
+            font-size: 1.5rem;
+        }
+        .mode-info {
+            text-align: left;
+        }
+        .mode-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .mode-stars {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        .start-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-lg);
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        .btn-icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <img src="/images/logo.png" alt="ChromaGuesser Logo" class="logo">
+        </div>
+        <h1 class="title"><span>Chroma</span>Guesser</h1>
+        <p class="subtitle">Master the Art of Hex Colors</p>
+    </header>
+    <main class="main-content">
+        <section class="game-modes">
+            <h2 class="mode-title">Select Game Mode</h2>
+            <div class="mode-options">
+                <button class="mode-btn active" onclick="selectMode('classic')">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-info">
+                        <div class="mode-name">Classic</div>
+                        <div class="mode-stars">⭐⭐</div>
+                        <div class="mode-desc">Classic mode with 3 color options</div>
+                    </div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('timed')">
+                    <div class="mode-icon">⏱️</div>
+                    <div class="mode-info">
+                        <div class="mode-name">Timed</div>
+                        <div class="mode-stars">⭐⭐⭐</div>
+                        <div class="mode-desc">60 seconds challenge</div>
+                    </div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('hard')">
+                    <div class="mode-icon">💪</div>
+                    <div class="mode-info">
+                        <div class="mode-name">Hard</div>
+                        <div class="mode-stars">⭐⭐⭐⭐</div>
+                        <div class="mode-desc">More options, higher stakes</div>
+                    </div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('expert')">
+                    <div class="mode-icon">👑</div>
+                    <div class="mode-info">
+                        <div class="mode-name">Expert</div>
+                        <div class="mode-stars">⭐⭐⭐⭐⭐</div>
+                        <div class="mode-desc">For color masters only</div>
+                    </div>
+                </button>
+                <button class="mode-btn" onclick="selectMode('speed')">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-info">
+                        <div class="mode-name">Speed Round</div>
+                        <div class="mode-stars">⭐⭐⭐⭐⭐</div>
+                        <div class="mode-desc">2 seconds to match the color!</div>
+                    </div>
+                </button>
+            </div>
+        </section>
+        <section class="player-section">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="playerName" 
+                    placeholder="Enter your name to begin" 
+                    required
+                    maxlength="20"
+                    autocomplete="off">
+            </div>
+            <div class="button-group">
+                <button class="start-btn" onclick="startGame()">
+                    <span class="btn-icon">🎮</span>
+                    <span class="btn-text">Start Game</span>
+                </button>
+            </div>
+        </section>
+        <section class="leaderboard">
+            <h2>Top Players</h2>
+            <ul class="leaderboard-list">
+                <li class="leaderboard-item">
+                    <span class="player-name">ColorMaster</span>
+                    <span class="player-score">1500</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span class="player-name">HexHero</span>
+                    <span class="player-score">1200</span>
+                </li>
+                <li class="leaderboard-item">
+                    <span class="player-name">ChromaChamp</span>
+                    <span class="player-score">900</span>
+                </li>
+            </ul>
+        </section>
+        <section class="achievements-preview">
+            <h2>Recent Achievements</h2>
+            <div class="achievements-grid" id="achievementsPreview">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+    <div class="popup" id="namePopup">
+        <div class="popup-content">
+            <h3>Oops!</h3>
+            <p>Please enter your name to start the game</p>
+            <button onclick="closePopup()" class="popup-btn">OK</button>
+        </div>
+    </div>
+    <script>
+        let selectedMode = 'classic';
+        // Initial fake leaderboard data
+        const initialLeaderboard = [
+            { name: "ColorMaster", score: 1500, mode: "hard" },
+            { name: "HexHero", score: 1200, mode: "timed" },
+            { name: "ChromaChamp", score: 900, mode: "classic" },
+            { name: "PixelPro", score: 850, mode: "hard" },
+            { name: "HueHunter", score: 800, mode: "classic" }
+        ];
+        // Get leaderboard data or use initial fake data if no data exists
+        let leaderboardData = JSON.parse(localStorage.getItem('leaderboard')) || initialLeaderboard;
+        // Make sure leaderboard is never empty
+        if (leaderboardData.length === 0) {
+            leaderboardData = initialLeaderboard;
+            localStorage.setItem('leaderboard', JSON.stringify(initialLeaderboard));
+        }
+        function showPopup() {
+            document.getElementById('namePopup').classList.add('show');
+        }
+        function closePopup() {
+            document.getElementById('namePopup').classList.remove('show');
+            document.getElementById('playerName').focus();
+        }
+        function selectMode(mode) {
+            selectedMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        function updateLeaderboard() {
+            const leaderboardList = document.querySelector('.leaderboard-list');
+            leaderboardList.innerHTML = '';
+            // Sort leaderboard by score
+            leaderboardData.sort((a, b) => b.score - a.score);
+            // Take top 5 players
+            const topPlayers = leaderboardData.slice(0, 5);
+            topPlayers.forEach((player, index) => {
+                const li = document.createElement('li');
+                li.className = 'leaderboard-item';
+                li.innerHTML = `
+                    <div class="player-info">
+                        <span class="player-rank">#${index + 1}</span>
+                        <span class="player-name">${player.name}</span>
+                        <span class="player-mode">${player.mode}</span>
+                    </div>
+                    <span class="player-score">${player.score}</span>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
+        function startGame() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                showPopup();
+                return;
+            }
+            localStorage.setItem('playerName', playerName);
+            localStorage.setItem('gameMode', selectedMode);
+            window.location.href = '/game.html';
+        }
+        // Initialize leaderboard when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLeaderboard();
+            document.getElementById('playerName').focus();
+        });
+        document.getElementById('playerName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startGame();
+            }
+        });
+        // Backup initialization
+        if (document.readyState === 'complete') {
+            updateLeaderboard();
+        }
+        // Initialize achievements
+        document.addEventListener('DOMContentLoaded', () => {
+            const achievements = new Achievements();
+            const unlockedAchievements = achievements.getUnlockedAchievements();
+            const achievementsPreview = document.getElementById('achievementsPreview');
+            
+            if (unlockedAchievements.length === 0) {
+                achievementsPreview.innerHTML = `
+                    <div class="no-achievements">
+                        No achievements unlocked yet. Start playing to earn them!
+                    </div>
+                `;
+            } else {
+                unlockedAchievements.forEach(achievement => {
+                    const achievementElement = document.createElement('div');
+                    achievementElement.className = 'achievement-card';
+                    achievementElement.innerHTML = `
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-info">
+                            <h3>${achievement.name}</h3>
+                            <p>${achievement.description}</p>
+                        </div>
+                    `;
+                    achievementsPreview.appendChild(achievementElement);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
