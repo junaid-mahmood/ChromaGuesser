@@ -19,3 +19,4 @@ Try the live demo here: [ChromaGuesser on Vercel](https://chroma-guesser.vercel.
    cd ChromaGuesser
     npm install
    npm start
+*AI was used in parts of this project
